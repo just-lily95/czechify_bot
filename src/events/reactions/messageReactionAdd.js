@@ -37,7 +37,7 @@ async function addRoleAndSend(member, role, channel) {
 }
 
 module.exports = async (client, reaction, user1) => {
-    //if (reaction.message.embeds) console.log(JSON.stringify(reaction.message.embeds))
+    if (reaction.message.embeds) console.log(JSON.stringify(reaction.message.embeds))
     var allowedEmojis1 = ["_beginner", "_intermediate", "_advanced", "_fluent", "_native_speaker"];
 
     //This here is a piece of code that you shouldnt under any circumstances delete, it prevents spam, by adding a timer on which people can react by checking if the bot can give the role, because it glitches when the bot cannot set 50,000,000 roles per second due to some stupid kid pressing our emojis

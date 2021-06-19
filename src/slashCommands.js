@@ -1,8 +1,11 @@
+function getApp(guildID) {
+    const app = client.api.applications(client.user.id)
+    if (guildID) app.guilds(guildID);
+    return app;
+}
+
 async function handleSlashCommands(interaction) {
-    if (interaction['data']) {
-        var commandName = interaction['data']['name'].cu()
-        if (client.commands[commandName]) client.commands[commandName][0](client); else console.log('Command no longer exists');
-    }else console.log('An interaction error has occured');
+    console.log(interaction)
 }
 
 module.exports = { f: handleSlashCommands }
