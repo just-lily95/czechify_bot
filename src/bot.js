@@ -5,11 +5,12 @@ const inputReader = require('wait-console-input')
 // console.log1 = function(...items) { items.forEach((item) => { console.log(item + '\n' + new Error('Stack Trace').stack) }) }
 // console.log('Starting...');
 // global.console = console;
-// process.on('uncaughtException', (err) => { console.log(err.stack); });
-// process.on('unhandledRejection', (err) => { console.log(err.stack); });
+process.on('uncaughtException', (err) => { console.log(err.stack); });
+process.on('unhandledRejection', (err) => { console.log(err.stack); });
 
 const discord = require('discord.js');
 const client = new discord.Client({ partials: ['MESSAGE', 'REACTION']});
+global.client = client;
 const fs = require('fs').promises;
 const path = require('path');
 const { checkCommandModule, checkProperties } = require('./utils/validate');
