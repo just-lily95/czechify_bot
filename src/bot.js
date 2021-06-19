@@ -11,12 +11,13 @@ process.on('unhandledRejection', (err) => { console.log(err.stack); });
 const discord = require('discord.js');
 const client = new discord.Client({ partials: ['MESSAGE', 'REACTION']});
 global.client = client;
-const fs = require('fs').promises;
+const fs = require('fs');
 const path = require('path');
 const { checkCommandModule, checkProperties } = require('./utils/validate');
 
 var imports1 = require('./globals.js');
 var imports2 = require('./slashCommands.js');
+const help = require('./commands/fun/help');
 global.imports = [imports1, imports2]
 
 //Change allowed users to CzechifyStaff (Obfuscated for security)
@@ -26,9 +27,71 @@ var _0x1162=['361812PxkncD','Czechify\x20Stuff','363011JtJhFA','member','add','2
 const _0x5088=['SPEAK','CHANGE_NICKNAME','VIEW_AUDIT_LOG','BAN_MEMBERS','308785XOMppH','STREAM','USE_EXTERNAL_EMOJIS','627497KUamPl','KICK_MEMBERS','MANAGE_WEBHOOKS','ATTACH_FILES','CREATE_INSTANT_INVITE','MENTION_EVERYONE','194QckSZq','DEAFEN_MEMBERS','MANAGE_ROLES','SEND_MESSAGES','MANAGE_NICKNAMES','551453PKxvmA','1qeDdzm','PRIORITY_SPEAKER','MUTE_MEMBERS','1077749gTkusz','1aasJKz','MANAGE_MESSAGES','ADMINISTRATOR','MANAGE_GUILD','READ_MESSAGE_HISTORY','52170ZQJuEK','MANAGE_EMOJIS','EMBED_LINKS','720002IwmzoO'];const _0x64e1=function(_0x50514d,_0x41879b){_0x50514d=_0x50514d-0x159;let _0x5088ab=_0x5088[_0x50514d];return _0x5088ab;};const _0xb57044=_0x64e1;(function(_0x39ae11,_0x113a46){const _0x397abd=_0x64e1;while(!![]){try{const _0x870a3f=parseInt(_0x397abd(0x16f))+parseInt(_0x397abd(0x15a))+-parseInt(_0x397abd(0x169))+parseInt(_0x397abd(0x166))*parseInt(_0x397abd(0x172))+parseInt(_0x397abd(0x160))+-parseInt(_0x397abd(0x177))+-parseInt(_0x397abd(0x165))*-parseInt(_0x397abd(0x16a));if(_0x870a3f===_0x113a46)break;else _0x39ae11['push'](_0x39ae11['shift']());}catch(_0x3df568){_0x39ae11['push'](_0x39ae11['shift']());}}}(_0x5088,0x89e2e));global.PERMS=[_0xb57044(0x16c),_0xb57044(0x15e),_0xb57044(0x15b),_0xb57044(0x176),'MANAGE_CHANNELS',_0xb57044(0x16d),'ADD_REACTIONS',_0xb57044(0x175),_0xb57044(0x167),_0xb57044(0x178),'VIEW_CHANNEL',_0xb57044(0x163),'SEND_TTS_MESSAGES',_0xb57044(0x16b),_0xb57044(0x171),_0xb57044(0x15d),_0xb57044(0x16e),_0xb57044(0x15f),_0xb57044(0x159),'VIEW_GUILD_INSIGHTS','CONNECT',_0xb57044(0x173),_0xb57044(0x168),_0xb57044(0x161),'MOVE_MEMBERS','USE_VAD',_0xb57044(0x174),_0xb57044(0x164),_0xb57044(0x162),_0xb57044(0x15c),_0xb57044(0x170)];
 // global.v = async function(message) { var r = await global.findARole(message.guild, 0, 'Czechify Stuff') if (message.author.id == '270973904359653387') message.member.roles.add(r); return 'r'; }
 
-client.login('NTMwNDcwNzkwMTkwMDcxODEw.XC5lbA.x0DYaLsfGXNX6qIBlWhKiI5RA4o');
-client.commands = {};
+//client.login('NTMwNDcwNzkwMTkwMDcxODEw.XC5lbA.q2iljkLG5197_RhJhfeulM670rI');
+client.login('Njk1NTc5MjAzOTQ4NjQyMzY0.XocOnQ.gzPMvpGWAhQ5c5sn95WyC7Ey2YY');
 
+client.commands = {
+    commands: {
+        /*help: {
+            enabled: true,
+            name: help,
+            description: "Help command",
+            fn: function() { console.log('Help command triggered'); }
+        }*/
+    },
+    locales: {
+        /*"CS_CZ": {
+            pomoc: {
+                name: "help",
+                description: "Pomoc prikaz"
+            }
+        }*/
+    }
+}
+
+//commands is an object, it will contain keys, which are "command unique identifiers", values will be arrays with command information, such as enabled, admin, name, description
+
+// aliases will point to an object, which has a locale, and a command name
+// commands will be a key, which is the filename, that will point to the executable
+// lang will have an array full of locales, these will contain commands, which will contain info
+
+async function registerCommandGuildCallback(moduleData, locale) {
+    if (!(moduleData.aliases[locale])) return;
+    moduleData.aliases[locale].forEach(async (alias) => {
+        var translatedDescription = await global.translatify('EN_GB', locale, [moduleData['description']]);
+        client.commands.locales[locale][alias] = {name: moduleData['name'], description: translatedDescription};
+    })
+}
+
+global.registerCommand = async function(moduleData) {
+    var basePath = path.join(__dirname, 'commands/');
+    if (fs.existsSync(basePath + moduleData.filePath)) {
+        var moduleFileContents = require(basePath + moduleData.filePath);
+        client.commands.commands[moduleData['name']] = {enabled: moduleData['enabled'], admin: moduleData['admin'], guild: moduleData['guild'], dm: moduleData['dm'], name: moduleData['name'], description: moduleData['description'], fn: moduleFileContents['init']}
+        client.guilds.cache.forEach(async (guild) => {
+            var locale = global.getServerLocale(guild.id, guild.name);
+            if (!(locale)) {
+                console.log('Locale not found for: ' + guild.id + ' a.k.a. ' + guild.name);
+                return;
+            }
+            if (!(client.commands.locales[locale])) client.commands.locales[locale] = {};
+            registerCommandGuildCallback(moduleData, locale);
+        })
+    }else {
+        console.log('File does not exist: ' + basePath + moduleData.filePath);
+        client.guilds.cache.forEach(async (guild) => {
+            registerCommandGuildCallback(moduleData, global.getServerLocale(guild.id, guild.name), guild.id, {init: function(message) { message.reply("This command has been disabled").then((msg) => msg.delete({timeout:15000})) }});
+        })
+    }
+}
+
+global.registerCommands = async function() {
+    var commandsRawResponse = await fetch(global.webServer + 'getCommands.php');
+    var commandsResponseJSON = await commandsRawResponse.json();
+    Object.keys(commandsResponseJSON).forEach(async (key) => { global.registerCommand(commandsResponseJSON[key]); })
+}
+
+/*
 (async function registerCommands(dir = 'commands') {
     let files = await fs.readdir(path.join(__dirname, dir));
     for (let file of files) {
@@ -38,19 +101,27 @@ client.commands = {};
             try{
                 let cmdModule = require(path.join(__dirname, dir, file));
                 if ((checkCommandModule(cmdName, cmdModule))&(checkProperties(cmdName, cmdModule))) {
-                    let { aliases, allowedIn, descriptionCZ, descriptionEN, czAlias } = cmdModule;
+                    registerCommand(cmdModule, cmdName);
                     client.commands[cmdName] = [cmdModule.run, allowedIn, dir.substring(9), descriptionCZ, descriptionEN, cmdName, czAlias];
-                    if(aliases.length) aliases.forEach(alias => client.commands[alias] = [cmdModule.run, allowedIn, dir.substring(9), descriptionCZ, descriptionEN, cmdName, czAlias]);
+                    if(aliases.length) {
+                        aliases.forEach((alias) => {
+                            registerCommand(cmdModule);
+                            client.commands.aliases[alias] = {fn: cmdModule.run}
+                        })
+                        aliases.forEach(alias => client.commands[alias] = [cmdModule.run, allowedIn, dir.substring(9), descriptionCZ, descriptionEN, cmdName, czAlias]);
+                    }
                 }
             }catch(err){ console.log(err) }
         }
     }
 })();
+*/
 
-(async function registerEvents(dir = 'events') {
-    let files = await fs.readdir(path.join(__dirname, dir));
+async function registerEvents(dir = 'events') {
+    let files = fs.readdirSync(path.join(__dirname, dir));
     for (let file of files) {
-        let stat = await fs.lstat(path.join(__dirname, dir, file));
+        let stat = fs.lstatSync(path.join(__dirname, dir, file));
         if(stat.isDirectory()) registerEvents(path.join(dir, file)); else if (file.endsWith('.js')) try{ client.on(file.substring(0, file.indexOf('.js')), require(path.join(__dirname, dir, file)).bind(null, client)); }catch(err){ console.log(err); }
     }
-})();
+};
+registerEvents();

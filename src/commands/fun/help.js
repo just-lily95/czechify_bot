@@ -99,7 +99,7 @@ async function English(message, client) {
 }
 
 module.exports = {
-    run: async (client, message, args) => {
+    init: async (client, message, args = []) => {
         if (message) message.delete();
         Czech(message, client);
     },

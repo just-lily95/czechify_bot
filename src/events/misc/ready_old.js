@@ -1,6 +1,6 @@
 discord = require('discord.js');
 const fetch = require('node-fetch');
-
+/*
 async function lots_of_messages_getter(channel, limit = 120) {
     //console.log('Running: ' + channel.name)
     var sum_messages = [];
@@ -21,8 +21,8 @@ async function getInactiveUsers1(guild) {
     var channels = await guild.channels.cache;
     var textChannels = [];
     //var historyChannelID = guild.channels.find(channel => channel.name === "H")
-    var allowedCategories = [/*'777607479474520104', '434223601776853002'*/];
-    var allowedChannels = ['782685540934877234'/*, '782687544818794506', '767360279423221790'*/];
+    \\var allowedCategories = ['777607479474520104', '434223601776853002'];
+    \\var allowedChannels = ['782685540934877234', '782687544818794506', '767360279423221790'];
     channels.forEach((channel) => { if (((allowedCategories.includes(channel.parentID))||(allowedChannels.includes(channel.id)))&&(channel.type == 'text')) { textChannels.push(channel); } })
     var messageSets = [];
     textChannels.forEach(async(textChannel) => {
@@ -58,12 +58,13 @@ async function randomStuff(arr2) {
 global.temp = 1;
 global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
+*/
 module.exports = async (client) => {
-
+    /*
     console.log(`${client.user.tag} funguje`);
 
     global.thanksWords = [];
-    global.botPrefix = await fetch('http://localhost/getBotPrefix.php').text;
+    global.botPrefix = await fetch(global.webServer + 'getBotPrefix.php').text;
 
     console.log(global.botPrefix);
 
@@ -124,7 +125,8 @@ module.exports = async (client) => {
                 var hasARole = false;
                 roles.forEach(async (role) => { if ((member.roles.cache.has(role.id))||(member.user.bot)) hasARole = true; })
                 if ((!(hasARole))&&(roles[0])&&(roles[1])&&(roles[2])&&(roles[3])&&(roles[4])&&(roles[5])) {
-                    global.embedify(member.guild.id, member.guild.name, member, global.initialWelcomeMessageText(member.guild.name, serverLanguageName), '#d7141a', 'Vítej, ' + member.displayName + '!');
+                    var welcomeChannel = await global.findChannels(3, guild, ['👋'], ['text']);
+                    global.embedify(guild.id, guild.name, member, global.initialWelcomeMessageText(guild.name, welcomeChannel.id), '#d7141a', 'Vítej, ' + member.displayName + '!');
                     member.roles.add(roles[4])
                 }
             })
@@ -168,4 +170,5 @@ module.exports = async (client) => {
             })
         })
     }, 604800000)
+    */
 };

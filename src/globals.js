@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 
+global.webServer = 'http://192.168.0.99/';
 global.apiAuth = ['4d624be15055ca2a9b14d5acc23b358bf14e06fb65fb89be915b1eb5553d5a90'];
 global.votes = {};
 global.tortureUsers = ['597186801777508380', '792832833340309524', '816776337980653629', '815295491746431027', '813868232255078460', '814647259206647899', '812822785884815400', '809837433193365537', '807623846110167090', '774728124330934333', '817149740084363308', '488417311653625858'];
@@ -16,11 +17,11 @@ global.initialWelcomeMessageText = function(guildName, welcomeChannelID) {
 }
 
 async function fetchEssentialInfo() {
-    global.thanksWords = await fetch('http://localhost/getThanksData.php');
+    global.thanksWords = await fetch(global.webServer + 'getThanksData.php');
     global.thanksWords = await global.thanksWords.json();
-    global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
+    global.botPrefix = await fetch(global.webServer + 'getBotPrefix.php');
     global.botPrefix = await global.botPrefix.text();
-    global.serverLocaleInfo = await fetch('http://localhost/getServerLocaleInfo.php');
+    global.serverLocaleInfo = await fetch(global.webServer + 'getServerLocaleInfo.php');
     global.serverLocaleInfo = await global.serverLocaleInfo.json();
 }
 
@@ -175,7 +176,7 @@ global.embedify = async function(guildID, guildName, channel, text, color, title
     return msg;
 }
 global.id2locale = function(guildID) {
-    if (global.serverLocaleInfo['id2locale']) return global.serverLocaleInfo['name2locale'][guildID]; else return false;
+    if (global.serverLocaleInfo['id2locale']) return global.serverLocaleInfo['id2locale'][guildID]; else return false;
 }
 global.name2locale = function(guildName) {
     if (global.serverLocaleInfo['name2locale']) return global.serverLocaleInfo['name2locale'][guildName]; else return false;
@@ -187,10 +188,10 @@ global.flagResolver = function(langCode) {
     return ':flag_' + langCode.split('_')[1].l() + ':';
 }
 global.translatify = async function(fromLang, toLang, text) {
-    var response = await fetch('http://localhost/translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text)));
-    console.log('http://localhost/translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text)))
+    var response = await fetch(global.webServer + 'translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text)));
+    console.log(global.webServer + 'translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text)))
     var text = await response.text();
-    if (text == 'None') { console.log('http://localhost/translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text))); console.log('TRANSLATION NOT FOUND IN DB'); }
+    if (text == 'None') { console.log(global.webServer + 'translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text))); console.log('TRANSLATION NOT FOUND IN DB'); }
     return text;
 }
 global.getServerLocale = function(guildID, guildName) {
