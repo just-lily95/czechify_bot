@@ -109,7 +109,7 @@ module.exports = async (client) => {
             if (channel) {
                 var role = await global.findARole(guild, 0, "Learning Czech");
                 channel.send('<@&' + role.id + '>').then((msg) => { msg.delete().catch((e) => {}) });
-                global.embedify(guild.id, guild.name, channel, ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 60000);
+                global.embedify(guild.name, channel, ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 60000);
             }
         })
     }, 60000)
@@ -125,8 +125,12 @@ module.exports = async (client) => {
                 var hasARole = false;
                 roles.forEach(async (role) => { if ((member.roles.cache.has(role.id))||(member.user.bot)) hasARole = true; })
                 if ((!(hasARole))&&(roles[0])&&(roles[1])&&(roles[2])&&(roles[3])&&(roles[4])&&(roles[5])) {
+<<<<<<< Updated upstream
                     var welcomeChannel = await global.findChannels(3, guild, ['👋'], ['text']);
                     global.embedify(guild.id, guild.name, member, global.initialWelcomeMessageText(guild.name, welcomeChannel.id), '#d7141a', 'Vítej, ' + member.displayName + '!');
+=======
+                    global.embedify(member.guild.name, member, global.initialWelcomeMessageText(member.guild.name, serverLanguageName), '#d7141a', 'Vítej, ' + member.displayName + '!');
+>>>>>>> Stashed changes
                     member.roles.add(roles[4])
                 }
             })
