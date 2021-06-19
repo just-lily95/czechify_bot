@@ -90,5 +90,5 @@ module.exports = async (client, oldMember, newMember) => {
         data[vc.id] = { name: vc.name, members: [] };
         vc.members.forEach((member) => { if ((states[member.id])&&(!((states[member.id].serverMute)||(states[member.id].serverDeaf)||(states[member.id].selfMute)||(states[member.id].selfDeaf)))) data[vc.id]['members'].push(member.id); })
     })
-    await fetch("https://najemi.cz/czechifyapi/discord/stats?action=log&guild=" + oldMember.member.guild.id + "&data=" + encodeURI(JSON.stringify(data))).then(res => res.text())
+    await fetch("https://najemi.cz/czechifyapi/discord/stats?action=log&guild=" + oldMember.member.guild.id + "&data=" + encodeURIComponent(JSON.stringify(data))).then(res => res.text())
 }

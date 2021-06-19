@@ -1,5 +1,5 @@
-categoryAliases = {"fun": `Fun :smile:`, "member": `Useful stuff :tools:`, "mod": `Moderator commands :hammer:`, "roles": `Roles :heart:`, "words": `Word Game :pencil:`}
-categoryAliasesCZ = {"fun": `Zábava :smile:`, "member": `Užitečné věci :tools:`, "mod": `Přikázy pro moderátory :hammer:`, "roles": `Role :heart:`, "words": `Hra se slovíčky :pencil:`}
+categoryAliases = {fun: `Fun :smile:`, member: `Useful stuff :tools:`, mod: `Moderator commands :hammer:`, roles: `Roles :heart:`, words: `Word Game :pencil:`}
+categoryAliasesCZ = {fun: `Zábava :smile:`, member: `Užitečné věci :tools:`, mod: `Přikázy pro moderátory :hammer:`, roles: `Role :heart:`, words: `Hra se slovíčky :pencil:`}
 const discord = require('discord.js');
 
 async function Czech(message, client) {
@@ -21,7 +21,7 @@ async function Czech(message, client) {
         if (categoryAliasesCZ[category]) {
             obj['name'] = categoryAliasesCZ[category];
             var txt = '';
-            oldOBJ.forEach((command) => {  if ((command[1])&&(command[1].length)&&(command[3])&&(command[4])&&(command[6])) { txt = txt + "**/" + command[6] + "** (" + command[1].join(", ") + ") - " + command[3]; if (!(oldOBJ.indexOf(command) == oldOBJ.length - 1)) txt = txt + "\n"; } })
+            oldOBJ.forEach((command) => {  if ((command[1])&&(command[1].length)&&(command[3])&&(command[4])&&(command[6])) { txt = txt + '**/' + command[6] + '** (' + command[1].join(', ') + ') - ' + command[3]; if (!(oldOBJ.indexOf(command) == oldOBJ.length - 1)) txt = txt + '\n'; } })
             obj['value'] = txt;
             if ((obj['name'])&&(obj['value'])) fields.push(obj);
         }
@@ -37,9 +37,9 @@ async function Czech(message, client) {
         .setDescription(`__Co umí náš bot?__\n\u200b`)
         .addFields(fields1);
     var msgcz = await message.channel.send(embedCZ);
-    msgcz.react("🇬🇧");
+    msgcz.react('🇬🇧');
     const time = 500000; //amount of time to collect for in milliseconds
-    const filter = (reaction, user) => { return ["🇬🇧"].includes(reaction.emoji.name) && user.id === message.author.id; }
+    const filter = (reaction, user) => { return ['🇬🇧'].includes(reaction.emoji.name) && user.id === message.author.id; }
     const collector = msgcz.createReactionCollector(filter, { time: time });
     collector.on('collect', async (reaction, reactionCollector) => {
         if (reaction = '🇬🇧') {
@@ -69,7 +69,7 @@ async function English(message, client) {
         if (categoryAliases[category]) {
             obj['name'] = categoryAliases[category];
             var txt = '';
-            oldOBJ.forEach((command) => {  if ((command[1])&&(command[1].length)&&(command[3])&&(command[4])&&(command[5])) { txt = txt + "**/" + command[5] + "** (" + command[1].join(", ") + ") - " + command[4]; if (!(oldOBJ.indexOf(command) == oldOBJ.length - 1)) txt = txt + "\n"; } })
+            oldOBJ.forEach((command) => {  if ((command[1])&&(command[1].length)&&(command[3])&&(command[4])&&(command[5])) { txt = txt + '**/' + command[5] + '** (' + command[1].join(', ') + ') - ' + command[4]; if (!(oldOBJ.indexOf(command) == oldOBJ.length - 1)) txt = txt + '\n'; } })
             obj['value'] = txt;
             if ((obj['name'])&&(obj['value'])) fields.push(obj);
         }
@@ -85,9 +85,9 @@ async function English(message, client) {
         .setDescription(`__What can our bot do?__\n\u200b`)
         .addFields(fields1);
     var msgen = await message.channel.send(embedEN);
-    msgen.react("🇨🇿");
+    msgen.react('🇨🇿');
     const time = 60000; //amount of time to collect for in milliseconds
-    const filter = (reaction, user) => { return ["🇨🇿"].includes(reaction.emoji.name) && user.id === message.author.id; };
+    const filter = (reaction, user) => { return ['🇨🇿'].includes(reaction.emoji.name) && user.id === message.author.id; };
     const collector = msgen.createReactionCollector(filter, { time: time });
     collector.on('collect', async (reaction, reactionCollector) => {
         if (reaction = '🇨🇿') {
@@ -99,13 +99,13 @@ async function English(message, client) {
 }
 
 module.exports = {
-    run: async (client, message, args) => {
-        message.delete();
+    init: async (client, message, args = []) => {
+        if (message) message.delete();
         Czech(message, client);
     },
-    descriptionCZ: "Pomoc",
-    descriptionEN: "Help",
+    descriptionCZ: 'Pomoc',
+    descriptionEN: 'Help',
     allowedIn: ['guild', 'dm'],
-    czAlias: "pomoc",
+    czAlias: 'pomoc',
     aliases: ['help', 'pomoc']
 }
