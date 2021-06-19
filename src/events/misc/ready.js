@@ -77,7 +77,7 @@ async function awaitCommandsLoad(client) {
     return;
 }
 
-global.temp = 1;
+global.statusCycle = 0;
 global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
 module.exports = async (client) => {
@@ -108,31 +108,26 @@ module.exports = async (client) => {
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
     setInterval(function() {
+        global.statusCycle++;
         guilds = [];
         client.guilds.cache.forEach((guild) => { guilds.push(guild.name); })
-        // console.log(JSON.stringify(guilds));
-
-        if (global.temp == 1) {
+        if (global.statusCycle == 1) {
             client.user.setActivity("/help", { type: 'LISTENING' });
-            global.temp++;
-        }else if (global.temp == 2){
+        }else if (global.statusCycle == 2){
             var members = 0;
             client.guilds.cache.forEach((guild) => { members = members + guild.memberCount; })
-            //if (!(client.guilds.cache.size == 1)) p = 's'; else p = '';
-            if (!(members == 1)) p = 's'; else p = '';
-            client.user.setActivity(' ' + members + ' member' + p, { type: 'WATCHING' })
+            client.user.setActivity(' ' + members + ' members', { type: 'WATCHING' })
             //client.user.setActivity('in ' + client.guilds.cache.size + " server" + p)
-            global.temp++;
-        }else if (global.temp == 3) {
+        }else if (global.statusCycle == 3) {
             var cmds = [];
             Object.keys(client.commands.commands).forEach((cmd) => {
                 cmd = client.commands[cmd];
                 // console.log(cmd[5]);
-                if ((cmd[2])&&(cmd[5])&&(!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]])))&&(!(cmds.includes(cmd[5])))) cmds.push(cmd[5]);
+                if ((!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]])))&&(!(cmds.includes(cmd[5])))) cmds.push(cmd[5]);
                 // console.log(JSON.stringify(cmds));
             })
             client.user.setActivity("/" + Object.keys(client.commands.commands)[Math.floor(Math.random() * Object.keys(client.commands.commands).length)], { type: 'LISTENING' })
-            global.temp = 1;
+            global.statusCycle = 1;
         }
     }, 15000)
     
