@@ -61,6 +61,11 @@ global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'che
 module.exports = async (client) => {
     console.log(client.user.tag + ' funguje');
 
+<<<<<<< Updated upstream
+=======
+    //console.log(global.thanksWords)
+
+>>>>>>> Stashed changes
     cmds = {}
 
     Object.keys(client.commands).forEach((cmd) => {
@@ -115,10 +120,17 @@ module.exports = async (client) => {
             if (welcomeChannel.length) {
                 var role = await global.findARole(guild, 0, "Learning Czech");
                 welcomeChannel[0].send('<@&' + role.id + '>').then((msg) => { msg.delete().catch((e) => {}) });
+<<<<<<< Updated upstream
                 global.embedify(guild.id, guild.name, welcomeChannel[0], ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 3600000);
             }
         })
     }, 3600000)
+=======
+                global.embedify(guild.name, welcomeChannel[0], ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 15000);
+            }
+        })
+    }, 15000)
+>>>>>>> Stashed changes
 
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {

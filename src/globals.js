@@ -11,7 +11,11 @@ global.react = async function(msg, emojis) { try { emojis.forEach((emoji) => msg
 global.removeAccents = function(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 
 global.initialWelcomeMessageText = function(guildName, welcomeChannelID) {
+<<<<<<< Updated upstream
     serverLanguageName = global.locale2language(global.getServerLocale(guildName))
+=======
+    serverLanguageName = global.languageNameResolver(global.languageResolver(guildName))
+>>>>>>> Stashed changes
     return ['__**', 'Welcome to', ' ', guildName, '**, ', 'the ' + serverLanguageName + ' learning server', '__', '!', '\n', '\n • ', 'First, set your ' + serverLanguageName + ' level by using the `/level` command in ', ' <#' + welcomeChannelID + '>', '!', '\n • ', 'Check out our YouTube channel', ': ', 'https://youtube.com/LearnCzech/'];
 }
 
@@ -20,12 +24,19 @@ async function fetchEssentialInfo() {
     global.thanksWords = await global.thanksWords.json();
     global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
     global.botPrefix = await global.botPrefix.text();
+<<<<<<< Updated upstream
     global.serverLocaleInfo = await fetch('http://localhost/getServerLocaleInfo.php');
     global.serverLocaleInfo = await global.serverLocaleInfo.json();
 }
 
 fetchEssentialInfo();
 setInterval(function() { fetchEssentialInfo(); }, 60000);
+=======
+}
+
+fetchEssentialInfo();
+setInterval(function() { fetchEssentialInfo(); }, 5000);
+>>>>>>> Stashed changes
 
 String.prototype.l = function() { return this.toLowerCase(); }
 String.prototype.cu = function() { return global.removeAccents(this.toLowerCase()); }
