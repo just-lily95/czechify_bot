@@ -61,12 +61,19 @@ global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'che
 module.exports = async (client) => {
     console.log(client.user.tag + ' funguje');
 
+<<<<<<< Updated upstream
     global.thanksWords = await fetch('http://localhost/getThanksData.php');
     global.thanksWords = await global.thanksWords.json();
     global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
     global.botPrefix = await global.botPrefix.text();
 
     console.log(global.thanksWords)
+=======
+    global.thanksWords = await fetch('http://localhost/getBotPrefix.php');
+    global.thanksWords = await global.thanksWords.json();
+    global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
+    global.botPrefix = await global.botPrefix.text();
+>>>>>>> Stashed changes
 
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
