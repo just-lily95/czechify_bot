@@ -60,20 +60,18 @@ global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
 module.exports = async (client) => {
     console.log(client.user.tag + ' funguje');
-
-<<<<<<< Updated upstream
+  
     global.thanksWords = await fetch('http://localhost/getThanksData.php');
     global.thanksWords = await global.thanksWords.json();
     global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
     global.botPrefix = await global.botPrefix.text();
 
     console.log(global.thanksWords)
-=======
+  
     global.thanksWords = await fetch('http://localhost/getBotPrefix.php');
     global.thanksWords = await global.thanksWords.json();
     global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
     global.botPrefix = await global.botPrefix.text();
->>>>>>> Stashed changes
 
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
@@ -100,7 +98,7 @@ module.exports = async (client) => {
             Object.keys(client.commands).forEach((cmd) => {
                 cmd = client.commands[cmd];
                 // console.log(cmd[5]);
-                
+
                 if ((cmd[2])&&(cmd[5])) if (!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]]))) if (!(cmds.includes(cmd[5]))) cmds.push(cmd[5]);
                 // console.log(JSON.stringify(cmds));
             })
@@ -108,7 +106,7 @@ module.exports = async (client) => {
             global.temp = 1
         }
     }, 15000)
-    
+
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {
             var channel = await global.findAChannel(0, guild, "vitejte");
