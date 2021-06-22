@@ -61,30 +61,40 @@ global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'che
 module.exports = async (client) => {
     console.log(client.user.tag + ' funguje');
   
+    cmds = {}
+
+    Object.keys(client.commands).forEach((cmd) => {
+        cmds[client.commands[cmd][5]] = cmd;
+        cmds[client.commands[cmd][6]] = cmd;
+    })
+
+    var app = client.api.applications(client.user.id);
+    client.guilds.cache.forEach(async (guild) => {
+        app.guilds(guild.id);
+        //var x = await app.commands.post({data: {name: 'help', description: 'Test command'}});
+        var x = await app.commands.get();
+        console.log(x);
+    })
+
+    console.log(Object.keys(cmds));
+  
     global.thanksWords = await fetch('http://localhost/getThanksData.php');
     global.thanksWords = await global.thanksWords.json();
     global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
     global.botPrefix = await global.botPrefix.text();
 
     console.log(global.thanksWords)
-  
-    global.thanksWords = await fetch('http://localhost/getBotPrefix.php');
-    global.thanksWords = await global.thanksWords.json();
-    global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
-    global.botPrefix = await global.botPrefix.text();
 
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
     setInterval(function() {
         guilds = [];
-        client.guilds.cache.forEach((guild) => { guilds.push(guild.name) })
+        client.guilds.cache.forEach((guild) => { guilds.push(guild.name); })
         // console.log(JSON.stringify(guilds));
 
-        modes = guilds.length + 2;
-
         if (global.temp == 1) {
-            client.user.setActivity("/pomoc", { type: 'LISTENING' });
-            global.temp = 2;
+            client.user.setActivity("/help", { type: 'LISTENING' });
+            global.temp++;
         }else if (global.temp == 2){
             var members = 0;
             client.guilds.cache.forEach((guild) => { members = members + guild.memberCount; })
@@ -92,36 +102,37 @@ module.exports = async (client) => {
             if (!(members == 1)) p = 's'; else p = '';
             client.user.setActivity(' ' + members + ' member' + p, { type: 'WATCHING' })
             //client.user.setActivity('in ' + client.guilds.cache.size + " server" + p)
-            global.temp = 3;
+            global.temp++;
         }else if (global.temp == 3) {
             var cmds = [];
             Object.keys(client.commands).forEach((cmd) => {
                 cmd = client.commands[cmd];
                 // console.log(cmd[5]);
-
-                if ((cmd[2])&&(cmd[5])) if (!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]]))) if (!(cmds.includes(cmd[5]))) cmds.push(cmd[5]);
+                if ((cmd[2])&&(cmd[5])&&(!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]])))&&(!(cmds.includes(cmd[5])))) cmds.push(cmd[5]);
                 // console.log(JSON.stringify(cmds));
             })
             client.user.setActivity("/" + cmds[Math.floor(Math.random() * cmds.length)], { type: 'LISTENING' })
-            global.temp = 1
+            global.temp = 1;
         }
     }, 15000)
 
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {
-            var channel = await global.findAChannel(0, guild, "vitejte");
-            if (channel) {
+            var welcomeChannel = await global.findChannels(3, guild, ['👋'], ['text']);
+            if (welcomeChannel.length) {
                 var role = await global.findARole(guild, 0, "Learning Czech");
-                channel.send('<@&' + role.id + '>').then((msg) => { msg.delete().catch((e) => {}) });
-                global.embedify(guild.name, channel, ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 60000);
+                welcomeChannel[0].send('<@&' + role.id + '>').then((msg) => { msg.delete().catch((e) => {}) });
+                global.embedify(guild.id, guild.name, welcomeChannel[0], ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 3600000);
             }
         })
-    }, 60000)
+    }, 3600000)
 
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {
-            serverLanguageLocale = global.languageResolver(guild.name);
-            serverLanguageName = global.languageNameResolver(serverLanguageLocale);
+            serverLocale = global.getServerLocale(guild.id, guild.name);
+            serverLanguageName = global.locale2language(serverLocale);
+            console.log(guild.channels.cache); //im not sure why i put this here, absolutely no clue, maybe to fetch vitejte messages and like check if there are any just sitting there
+            if (!(serverLocale)) throw new Error('Server Locale could not be found for ' + guild.name + '/' + guild.id)
 
             var roles = global.sortByKey(await global.findRoles(guild, 0, ["Beginner", "Intermediate", "Advanced", "Fluent", "Native Speaker", "Learning Czech"]), "name");
             if (!(roles.length == 6)) return;
@@ -132,7 +143,7 @@ module.exports = async (client) => {
                 var hasARole = false;
                 roles.forEach(async (role) => { if ((member.roles.cache.has(role.id))||(member.user.bot)) hasARole = true; })
                 if ((!(hasARole))&&(roles[0])&&(roles[1])&&(roles[2])&&(roles[3])&&(roles[4])&&(roles[5])) {
-                    global.embedify(member.guild.name, member, global.initialWelcomeMessageText(member.guild.name, serverLanguageName), '#d7141a', 'Vítej, ' + member.displayName + '!');
+                    global.embedify(guild.id, guild.name, member, global.initialWelcomeMessageText(guild.name, serverLanguageName), '#d7141a', 'Vítej, ' + member.displayName + '!');
                     member.roles.add(roles[4])
                 }
             })

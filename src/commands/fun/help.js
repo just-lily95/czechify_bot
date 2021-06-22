@@ -100,7 +100,7 @@ async function English(message, client) {
 
 module.exports = {
     run: async (client, message, args) => {
-        message.delete();
+        if (message) message.delete();
         Czech(message, client);
     },
     descriptionCZ: 'Pomoc',
