@@ -59,22 +59,19 @@ global.temp = 1;
 global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
 module.exports = async (client) => {
-
-    console.log(`${client.user.tag} funguje`);
-
-    global.thanksWords = [];
-    global.botPrefix = await fetch('http://localhost/getBotPrefix.php').text;
-
-    console.log(global.botPrefix);
-
     console.log(client.user.tag + ' funguje');
-
+  
     global.thanksWords = await fetch('http://localhost/getThanksData.php');
     global.thanksWords = await global.thanksWords.json();
     global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
     global.botPrefix = await global.botPrefix.text();
 
     console.log(global.thanksWords)
+  
+    global.thanksWords = await fetch('http://localhost/getBotPrefix.php');
+    global.thanksWords = await global.thanksWords.json();
+    global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
+    global.botPrefix = await global.botPrefix.text();
 
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
