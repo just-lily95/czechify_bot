@@ -67,7 +67,6 @@ module.exports = async (client) => {
 
     console.log(global.botPrefix);
 
-
     console.log(client.user.tag + ' funguje');
 
     global.thanksWords = await fetch('http://localhost/getThanksData.php');
