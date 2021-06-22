@@ -60,12 +60,7 @@ global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
 module.exports = async (client) => {
     console.log(client.user.tag + ' funguje');
-
-<<<<<<< Updated upstream
-=======
-    //console.log(global.thanksWords)
-
->>>>>>> Stashed changes
+  
     cmds = {}
 
     Object.keys(client.commands).forEach((cmd) => {
@@ -82,6 +77,13 @@ module.exports = async (client) => {
     })
 
     console.log(Object.keys(cmds));
+  
+    global.thanksWords = await fetch('http://localhost/getThanksData.php');
+    global.thanksWords = await global.thanksWords.json();
+    global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
+    global.botPrefix = await global.botPrefix.text();
+
+    console.log(global.thanksWords)
 
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
@@ -113,24 +115,17 @@ module.exports = async (client) => {
             global.temp = 1;
         }
     }, 15000)
-    
+
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {
             var welcomeChannel = await global.findChannels(3, guild, ['👋'], ['text']);
             if (welcomeChannel.length) {
                 var role = await global.findARole(guild, 0, "Learning Czech");
                 welcomeChannel[0].send('<@&' + role.id + '>').then((msg) => { msg.delete().catch((e) => {}) });
-<<<<<<< Updated upstream
                 global.embedify(guild.id, guild.name, welcomeChannel[0], ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 3600000);
             }
         })
     }, 3600000)
-=======
-                global.embedify(guild.name, welcomeChannel[0], ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 15000);
-            }
-        })
-    }, 15000)
->>>>>>> Stashed changes
 
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {
