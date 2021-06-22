@@ -15,7 +15,6 @@ module.exports = async (client, member) => {
 
     var welcomeChannel = await global.findChannels(3, member.guild, ['👋'], ['text']);
 
-<<<<<<< Updated upstream
     global.embedify(member.guild.id, member.guild.name, member, global.initialWelcomeMessageText(member.guild.name, welcomeChannel[0].id), '#d7141a', welcome + '!');
 
     //if (channel[Object.keys(channel)[0]]) channel[Object.keys(channel)[0]].send(welcome + ' <@' + member.id + '!').then(msg => msg.delete()).catch((e) => {})
@@ -24,16 +23,10 @@ module.exports = async (client, member) => {
 
     //var emojis = global.sortByKey(await global.findEmojis(member.guild, 1, ['_beginner', '_intermediate', '_advanced', '_fluent', '_native_speaker']), 'name');
     //msg = await global.embedify(member.guild.id, member.guild.name, channel, ['**<@' + member.id + '>, ', 'React to this message to set your ' + serverLanguage + ' level and proceed to the server', '\n\n<_:' + emojis[1] + '> ', '**Beginner** - I\'m just starting to learn', '\n\n<_:' + emojis[3] + '> ', '**Intermediate** - I can construct sentences', '\n\n<_:' + emojis[0] + '> ', '**Advanced** - Talking isn\'t a problem for me', '\n\n<_:' + emojis[2] + '> ', '**Fluent** - Czech is my second self', '\n\n<_:' + emojis[4] + '> ', '**Native speaker** - I was born in the Czech Republic'], '#d7141a', welcome + '!')
-=======
-    global.embedify(member.guild.name, member, global.initialWelcomeMessageText(member.guild.name, welcomeChannel[0].id), '#d7141a', welcome + '!');
-
-    //if (channel[Object.keys(channel)[0]]) channel[Object.keys(channel)[0]].send(welcome + ' <@' + member.id + '!').then(msg => msg.delete()).catch((e) => {})
-
-    member.roles.add(await global.findARole(member.guild, 0, 'Learning ' + serverLanguageName));
 
     //var emojis = global.sortByKey(await global.findEmojis(member.guild, 1, ['_beginner', '_intermediate', '_advanced', '_fluent', '_native_speaker']), 'name');
     //msg = await global.embedify(member.guild.name, channel, ['**<@' + member.id + '>, ', 'React to this message to set your ' + serverLanguageName + ' level and proceed to the server', '\n\n<_:' + emojis[1] + '> ', '**Beginner** - I\'m just starting to learn', '\n\n<_:' + emojis[3] + '> ', '**Intermediate** - I can construct sentences', '\n\n<_:' + emojis[0] + '> ', '**Advanced** - Talking isn\'t a problem for me', '\n\n<_:' + emojis[2] + '> ', '**Fluent** - Czech is my second self', '\n\n<_:' + emojis[4] + '> ', '**Native speaker** - I was born in the Czech Republic'], '#d7141a', welcome + '!')
->>>>>>> Stashed changes
+
     //global.react(msg, [emojis[1], emojis[3], emojis[0], emojis[2], emojis[4]]);
     //msg.changeLevelMessage = true;
 }
