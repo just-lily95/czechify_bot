@@ -1,46 +1,58 @@
 const discord = require('discord.js');
-module.exports = {
-    run: async(client, message, args)  => {
-if(!message.member.hasPermission('BAN_MEMBERS')){
 
-    let embed = new discord.MessageEmbed();
-    var bookname = booknames[Math.floor(Math.random() * booknames.length)];
-
-    embed
-        .setDescription(`Nesmíš! OwO`)
-        .setColor('#fcfcfc')
-        .setAuthor(`Ne >:C`)
-        message.channel.send(embed).then(msg => msg.delete({ timeout: 10000 }));
-        message.delete();
-}else{
-    let memberId = message.mentions.users.first();
-    let reason = message.content.substr(`      ${memberId}`.length);
-    try{
-        let embed = new discord.MessageEmbed();
-        embed
-        .addField("Příčina", reason)
-        .setDescription("**:C**")
-        .setColor('#fafafa')
-        .setAuthor(`Užiuateu ${memberId.username} byl zabanován!`);
-        message.channel.send(embed);
-        Log(memberId, reason);
-        let bannedMember = await message.guild.members.fetch(memberId.id);
-        bannedMember.ban({ reason: `${reason}` })
-        
-    }catch(err) {
-        console.log(err);
-    }
-}
-
-function Log(member, reason) {
-    const logChannel = client.channels.cache.find(channel => channel.name === "🗒logs");
-    let embed = new discord.MessageEmbed();
-        embed
-        .setDescription(`Uživatel ${member} byl zabanován!\nID: ${member.id}\nPříčina: ${reason}`)
+async function log(member) {
+    var logChannel = await global.findChannels(0, member.guild, "logs", ["text"])
+    let embed = new discord.MessageEmbed()
+        .setDescription(`Uživatel ${member} (${member.id}) byl zakázán`)
         .setColor('#ff3c36')
-        logChannel.send(embed);
+    logChannel[1].send(embed);
 }
 
-},
-aliases: ['zakazat', 'zdemolovat', 'rozdrtit']
+module.exports = {
+    run: async(client, message, args) => {
+        message.delete();
+        if (!(message.member.hasPermission('BAN_MEMBERS'))) {
+            var embed = new discord.MessageEmbed()
+                .setDescription("**Podvodníku**")
+                .setColor('#ff3c36')
+                .setAuthor(`Nech toho!`)
+                .setThumbnail("https://i.imgur.com/mIcC1fp.gif");
+            message.channel.send(embed).then(msg => { msg.delete({ timeout: 5000 }).catch((e) => {}) });
+        }else if (message.mentions.members.first()) {
+            if (message.member.roles.highest.rawPosition > message.mentions.members.first().roles.highest.rawPosition) {
+                if ((message.mentions.members.first().bannable)&&(message.mentions.members.first().roles.highest.rawPosition < message.guild.me.roles.highest.rawPosition)) {
+                    var toBan = message.mentions.members.first()
+                    var toBan1 = message.mentions.users.first()
+                    var embed = new discord.MessageEmbed()
+                        .setDescription("**Jupí** :tada:")
+                        .setColor('#ff3c36')
+                        .setAuthor(`Uživatel ${toBan1.tag} byl zabanován!`)
+                        .setThumbnail("https://i.imgur.com/mIcC1fp.gif");
+                    message.channel.send(embed).then((msg) => { msg.delete({ timeout: 15000 }).catch((e) => {}) });
+                    toBan.send("https://i.imgur.com/mIcC1fp.gif").then((msg) => { msg.delete({ timeout: 15000 }).catch((e) => {}) });
+                    setTimeout(function() { toBan.ban(); }, 500)
+                    log(message, toBan);
+                }else {
+                    var embed = new discord.MessageEmbed()
+                        .setDescription("**Podvodníku**")
+                        .setColor('#ff3c36')
+                        .setAuthor(`Nech toho!`)
+                        .setThumbnail("https://i.imgur.com/AveAmWu.gif");
+                    message.channel.send(embed).then(msg => { msg.delete({ timeout: 5000 }).catch((e) => {}) });
+                }
+            }else {
+                var embed = new discord.MessageEmbed()
+                    .setDescription("**Podvodníku**")
+                    .setColor('#ff3c36')
+                    .setAuthor(`Nech toho!`)
+                    .setThumbnail("https://i.imgur.com/AveAmWu.gif");
+                message.channel.send(embed).then(msg => { msg.delete({ timeout: 5000 }).catch((e) => {}) });
+            }
+        }
+    },
+    descriptionCZ: "Zabanovat",
+    descriptionEN: "Ban",
+    allowedIn: ["guild"],
+    czAlias: "banovat",
+    aliases: ['banovat', 'ban']
 }
