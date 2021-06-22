@@ -58,8 +58,6 @@ global.temp = 1;
 global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
 module.exports = async (client) => {
-<<<<<<< Updated upstream
-=======
     console.log(client.user.tag + ' funguje');
 
     global.thanksWords = await fetch('http://localhost/getThanksData.php');
@@ -71,7 +69,6 @@ module.exports = async (client) => {
 
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
->>>>>>> Stashed changes
     setInterval(function() {
         if (global.temp == 1) {
             client.user.setActivity("/pomoc", { type: 'LISTENING' });
