@@ -83,9 +83,7 @@ global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'che
 module.exports = async (client) => {
     console.log(client.user.tag + ' funguje');
 
-    global.registerCommands();
-
-    cmds = {};
+    cmds = {}
 
     Object.keys(client.commands).forEach((cmd) => {
         cmds[client.commands[cmd][5]] = cmd;
@@ -130,7 +128,7 @@ module.exports = async (client) => {
             global.statusCycle = 1;
         }
     }, 15000)
-    
+
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {
             var welcomeChannel = await global.findChannels(3, guild, ['👋'], ['text']);

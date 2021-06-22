@@ -13,6 +13,7 @@ global.removeAccents = function(str) { return str.normalize('NFD').replace(/[\u0
 
 global.initialWelcomeMessageText = function(guildName, welcomeChannelID) {
     serverLanguageName = global.locale2language(global.getServerLocale(guildName))
+
     return ['__**', 'Welcome to', ' ', guildName, '**, ', 'the ' + serverLanguageName + ' learning server', '__', '!', '\n', '\n • ', 'First, set your ' + serverLanguageName + ' level by using the `/level` command in ', ' <#' + welcomeChannelID + '>', '!', '\n • ', 'Check out our YouTube channel', ': ', 'https://youtube.com/LearnCzech/'];
 }
 
@@ -27,6 +28,9 @@ async function fetchEssentialInfo() {
 
 fetchEssentialInfo();
 setInterval(function() { fetchEssentialInfo(); }, 60000);
+
+fetchEssentialInfo();
+setInterval(function() { fetchEssentialInfo(); }, 5000);
 
 String.prototype.l = function() { return this.toLowerCase(); }
 String.prototype.cu = function() { return global.removeAccents(this.toLowerCase()); }
@@ -160,8 +164,8 @@ global.findEmojis = async function(guild, mode, emojiName) {
     }
     return emojis
 }
-global.embedify = async function(guildID, guildName, channel, text, color, title = '', author = '', footer = false, content = '', displayName = '', avatarURL = '', _delete = false, deleteTimer = 0) {
-    var languageTo = global.getServerLocale(guildID, guildName);
+global.embedify = async function(guildName, channel, text, color, title = '', author = '', footer = false, content = '', displayName = '', avatarURL = '', _delete = false, deleteTimer = 0) {
+    var languageTo = global.languageResolver(guildName);
     var flag1 = global.flagResolver(languageTo);
     var flag2 = global.flagResolver('EN_GB');
     var translatedText = await global.translatify('EN_GB', languageTo, text);
@@ -185,7 +189,7 @@ global.locale2language = function(locale) {
     if (global.serverLocaleInfo['locale2language']) return global.serverLocaleInfo['locale2language'][locale]; else return false;
 }
 global.flagResolver = function(langCode) {
-    return ':flag_' + langCode.split('_')[1].l() + ':';
+    return (':flag_' + langCode.split('_')[1] + ':').l();
 }
 global.translatify = async function(fromLang, toLang, text) {
     var response = await fetch(global.webServer + 'translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text)));
@@ -193,10 +197,5 @@ global.translatify = async function(fromLang, toLang, text) {
     var text = await response.text();
     if (text == 'None') { console.log(global.webServer + 'translate.php?fromLang=' + fromLang + '&toLang=' + toLang + '&text=' + encodeURIComponent(JSON.stringify(text))); console.log('TRANSLATION NOT FOUND IN DB'); }
     return text;
-}
-global.getServerLocale = function(guildID, guildName) {
-    var locale = global.id2locale(guildID);
-    if (locale) return locale;
-    return global.name2locale(guildName);
 }
 module.exports = { };
