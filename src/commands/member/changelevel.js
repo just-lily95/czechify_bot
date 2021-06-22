@@ -4,6 +4,7 @@ module.exports = {
     run: async (client, message, args) => {
       
         message.delete();
+      
         serverLocale = global.getServerLocale(message.guild.id, message.guild.name);
         serverLanguage = global.locale2language(serverLocale);
         welcome = await global.translatify('EN_GB', serverLocale, ['Welcome']);

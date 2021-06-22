@@ -55,19 +55,41 @@ async function randomStuff(arr2) {
     return allMsgs
 }
 
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+async function awaitCommandsLoad(client) {
+    x = false;
+    setInterval(function() {
+        if (Object.keys(client.commands.locales).length > 0) {
+            count = Object.keys(client.commands.locales).length;
+            setInterval(function() {
+                if (Object.keys(client.commands.locales).length == count) x = true;
+            }, 500)
+        }
+    }, 100)
+    while (!(x)) {
+        await sleep(100);
+        console.log('Awaiting commands load...');
+    }
+    console.log("Commands loaded");
+    return;
+}
+
 global.temp = 1;
 global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
 module.exports = async (client) => {
     console.log(client.user.tag + ' funguje');
-  
+
     cmds = {}
 
     Object.keys(client.commands).forEach((cmd) => {
         cmds[client.commands[cmd][5]] = cmd;
         cmds[client.commands[cmd][6]] = cmd;
     })
-
+    /*
     var app = client.api.applications(client.user.id);
     client.guilds.cache.forEach(async (guild) => {
         app.guilds(guild.id);
@@ -75,26 +97,24 @@ module.exports = async (client) => {
         var x = await app.commands.get();
         console.log(x);
     })
+    */
 
-    console.log(Object.keys(cmds));
-  
-    global.thanksWords = await fetch('http://localhost/getThanksData.php');
-    global.thanksWords = await global.thanksWords.json();
-    global.botPrefix = await fetch('http://localhost/getBotPrefix.php');
-    global.botPrefix = await global.botPrefix.text();
+    await awaitCommandsLoad(client);
 
-    console.log(global.thanksWords)
+    console.log(client.commands);
 
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
     setInterval(function() {
         guilds = [];
-        client.guilds.cache.forEach((guild) => { guilds.push(guild.name); })
+        client.guilds.cache.forEach((guild) => { guilds.push(guild.name) })
         // console.log(JSON.stringify(guilds));
 
+        modes = guilds.length + 2;
+
         if (global.temp == 1) {
-            client.user.setActivity("/help", { type: 'LISTENING' });
-            global.temp++;
+            client.user.setActivity("/pomoc", { type: 'LISTENING' });
+            global.temp = 2;
         }else if (global.temp == 2){
             var members = 0;
             client.guilds.cache.forEach((guild) => { members = members + guild.memberCount; })
@@ -102,16 +122,17 @@ module.exports = async (client) => {
             if (!(members == 1)) p = 's'; else p = '';
             client.user.setActivity(' ' + members + ' member' + p, { type: 'WATCHING' })
             //client.user.setActivity('in ' + client.guilds.cache.size + " server" + p)
-            global.temp++;
+            global.temp = 3;
         }else if (global.temp == 3) {
             var cmds = [];
-            Object.keys(client.commands).forEach((cmd) => {
+            Object.keys(client.commands.commands).forEach((cmd) => {
                 cmd = client.commands[cmd];
                 // console.log(cmd[5]);
-                if ((cmd[2])&&(cmd[5])&&(!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]])))&&(!(cmds.includes(cmd[5])))) cmds.push(cmd[5]);
+                
+                if ((cmd[2])&&(cmd[5])) if (!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]]))) if (!(cmds.includes(cmd[5]))) cmds.push(cmd[5]);
                 // console.log(JSON.stringify(cmds));
             })
-            client.user.setActivity("/" + cmds[Math.floor(Math.random() * cmds.length)], { type: 'LISTENING' })
+            client.user.setActivity("/" + Object.keys(client.commands.commands)[Math.floor(Math.random() * Object.keys(client.commands.commands).length)], { type: 'LISTENING' })
             global.temp = 1;
         }
     }, 15000)
@@ -131,7 +152,9 @@ module.exports = async (client) => {
         client.guilds.cache.forEach(async (guild) => {
             serverLocale = global.getServerLocale(guild.id, guild.name);
             serverLanguageName = global.locale2language(serverLocale);
-            console.log(guild.channels.cache); //im not sure why i put this here, absolutely no clue, maybe to fetch vitejte messages and like check if there are any just sitting there
+            // create invite for all guilds which dont have a locale :smile:
+            // GuildChannel.createInvite()
+            // console.log(guild.channels.cache); //im not sure why i put this here, absolutely no clue, maybe to fetch vitejte messages and like check if there are any just sitting there
             if (!(serverLocale)) throw new Error('Server Locale could not be found for ' + guild.name + '/' + guild.id)
 
             var roles = global.sortByKey(await global.findRoles(guild, 0, ["Beginner", "Intermediate", "Advanced", "Fluent", "Native Speaker", "Learning Czech"]), "name");
@@ -140,10 +163,13 @@ module.exports = async (client) => {
             var members = await guild.members.fetch();
             members.forEach((member) => {
                 ms[member.id] = member;
+            })
+            members.forEach(async (member) => {
                 var hasARole = false;
                 roles.forEach(async (role) => { if ((member.roles.cache.has(role.id))||(member.user.bot)) hasARole = true; })
                 if ((!(hasARole))&&(roles[0])&&(roles[1])&&(roles[2])&&(roles[3])&&(roles[4])&&(roles[5])) {
-                    global.embedify(guild.id, guild.name, member, global.initialWelcomeMessageText(guild.name, serverLanguageName), '#d7141a', 'Vítej, ' + member.displayName + '!');
+                    var welcomeChannel = await global.findChannels(3, guild, ['👋'], ['text']);
+                    global.embedify(guild.id, guild.name, member, global.initialWelcomeMessageText(guild.name, welcomeChannel.id), '#d7141a', 'Vítej, ' + member.displayName + '!');
                     member.roles.add(roles[4])
                 }
             })

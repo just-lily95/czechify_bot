@@ -99,8 +99,13 @@ async function English(message, client) {
 }
 
 module.exports = {
-    run: async (client, message, args) => {
+<<<<<<< Updated upstream
+    init: async (client, message, args = []) => {
         if (message) message.delete();
+=======
+    run: async (client, message, args) => {
+        message.delete();
+>>>>>>> Stashed changes
         Czech(message, client);
     },
     descriptionCZ: 'Pomoc',
