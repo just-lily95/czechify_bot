@@ -27,7 +27,7 @@ module.exports = {
             if (wordData['error']['code'] == 500) { console.log(wordData); return; }
             var currentError = wordData['error']['errors'][wordData['error']['errors'].length - 1];
             if (currentError['flag'] == 'TOO_FAST') {
-                var data = await fetch('http://localhost/translate.php?fromLang=EN_GB&toLang=CS_CZ&text=' + encodeURI('You already have **all** the words!'));
+                var data = await fetch('http://localhost/translate.php?fromLang=EN_GB&toLang=CS_CZ&text=' + encodeURIComponent('You already have **all** the words!'));
                 var text = await data.text();
                 message.reply(text);
                 return;

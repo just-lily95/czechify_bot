@@ -83,3 +83,4 @@ module.exports = async (client, reaction, user1) => {
     }
 
 }
+//'Feel free to send messages in', ' <#433946325969797133> ', 'at any time', ', ', 'ask a question in', ' <#434230418334547968> ', 'or join a voice channel', '!', '\n • ', 'Learn about our word game in', ' <#828357433713360897>', '\n • '

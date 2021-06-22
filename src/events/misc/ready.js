@@ -1,4 +1,5 @@
-discord = require('discord.js')
+discord = require('discord.js');
+const fetch = require('node-fetch');
 
 async function lots_of_messages_getter(channel, limit = 120) {
     //console.log('Running: ' + channel.name)
@@ -58,6 +59,14 @@ global.temp = 1;
 global.hiddenCategories = {"mod": true}
 global.hiddenCommands = {'bumpreminder': true, "thanks": true, 'add': true, 'check-servers': true}
 module.exports = async (client) => {
+
+    console.log(`${client.user.tag} funguje`);
+
+    global.thanksWords = [];
+    global.botPrefix = await fetch('http://localhost/getBotPrefix.php').text;
+
+    console.log(global.botPrefix);
+
     console.log(client.user.tag + ' funguje');
 
     global.thanksWords = await fetch('http://localhost/getThanksData.php');
@@ -70,6 +79,12 @@ module.exports = async (client) => {
     client.ws.on('INTERACTION_CREATE', global.imports[1].f)
 
     setInterval(function() {
+        guilds = [];
+        client.guilds.cache.forEach((guild) => { guilds.push(guild.name) })
+        // console.log(JSON.stringify(guilds));
+
+        modes = guilds.length + 2;
+
         if (global.temp == 1) {
             client.user.setActivity("/pomoc", { type: 'LISTENING' });
             global.temp = 2;
@@ -85,13 +100,15 @@ module.exports = async (client) => {
             var cmds = [];
             Object.keys(client.commands).forEach((cmd) => {
                 cmd = client.commands[cmd];
+                // console.log(cmd[5]);
+
                 if ((cmd[2])&&(cmd[5])) if (!((global.hiddenCategories[cmd[2]])||(global.hiddenCommands[cmd[5]]))) if (!(cmds.includes(cmd[5]))) cmds.push(cmd[5]);
+                // console.log(JSON.stringify(cmds));
             })
             client.user.setActivity("/" + cmds[Math.floor(Math.random() * cmds.length)], { type: 'LISTENING' })
             global.temp = 1
         }
-    }, 5000)
-    console.log(`${client.user.tag} funguje`);
+    }, 15000)
 
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {
@@ -99,11 +116,7 @@ module.exports = async (client) => {
             if (channel) {
                 var role = await global.findARole(guild, 0, "Learning Czech");
                 channel.send('<@&' + role.id + '>').then((msg) => { msg.delete().catch((e) => {}) });
-                var embed = new discord.MessageEmbed()
-                    .setDescription('Please write **/level**!')
-                    .setColor('#d7141a')
-                    .setAuthor("Welcome! Set your level to enter the server!");
-                channel.send(embed)
+                global.embedify(guild.name, channel, ['Please set your Czech level by using the `/level` command'], '#d7141a', 'Vítej! Pro odemčení serveru si nastav úroveň češtiny!', '', false, '', '', '', true, 60000);
             }
         })
     }, 60000)
@@ -122,67 +135,18 @@ module.exports = async (client) => {
                 var hasARole = false;
                 roles.forEach(async (role) => { if ((member.roles.cache.has(role.id))||(member.user.bot)) hasARole = true; })
                 if ((!(hasARole))&&(roles[0])&&(roles[1])&&(roles[2])&&(roles[3])&&(roles[4])&&(roles[5])) {
-                    let welcomeMsg = new discord.MessageEmbed()
-                        .setColor('#ffa530')
-                        .setTitle(`Vítej, ${member.displayName}!`)
-                        .setDescription(`:flag_cz: __**Vítejte na CZECHIFY**, hlavním výukovém serveru Česka__!
-
-                        •  Pro začátek si nastavte úroveň češtiny a svou rodnou zemi!
-                        •  Nebojte se kdykoli napsat do <#433946325969797133>, zeptat v <#434230418334547968> nebo se můžete připojit do hlasového kanálu!
-                        •  V <#770734721835073566> se můžete učit nová slovíčka s pomocí **/slovo**!
-                        •  Jestli budete potřebovat pomoc, napište adminům!
-                        •  Podivejte se na náš YouTube kanál:
-                           https://youtube.com/channel/UChlYCUWTihnOVKbop8Gosjw/
-
-
-                        :flag_gb: __**Welcome to CZECHIFY**, the Czech learning server__!
-
-                        •  First, set your Czech level and your country!
-                        •  Don't be afraid to send messages in <#433946325969797133> at any time, ask in <#434230418334547968> or you can join a voice channel!
-                        •  In <#770734721835073566> you can learn new words with **/word**!
-                        •  If you need help feel free to message an admin!
-                        •  Check out our YouTube channel:
-                           https://youtube.com/channel/UChlYCUWTihnOVKbop8Gosjw/`
-                        );
-                    try {
-                        member.send(welcomeMsg).catch((err) => {});
-                    }catch {
-                        console.log('Failed to DM ' + member.user.tag);
-                    }
+                    global.embedify(member.guild.name, member, global.initialWelcomeMessageText(member.guild.name, serverLanguageName), '#d7141a', 'Vítej, ' + member.displayName + '!');
                     member.roles.add(roles[4])
-                    console.log('A dm was sent to ' + member.user.tag)
                 }
             })
-
             var roleToCheck = await global.findARole(guild, 0, 'Learning Czech');
             var roleToGive = await global.findARole(guild, 0, 'Pending Kick 1');
             var timeNow = Math.round(new Date().getTime() / 1000);
             timeBeforeKick = 7890000;
             roleToCheck.members.forEach((member) => { if (!(member.roles.cache.has(roleToGive.id))) if (timeNow - timeBeforeKick > Math.round(member.joinedTimestamp / 1000)) member.roles.add(roleToGive); else ; else if (timeNow - timeBeforeKick < Math.round(member.joinedTimestamp / 1000)) member.roles.remove(roleToGive); })
 
-            var rolesToCheck = await global.sortByKey(await global.findRoles(guild, 0, ['Beginner', 'Intermediate', 'Advanced', 'Fluent', 'Native Speaker']), 'name');
-
-
-
-
-
-
-
-
-
-
-
             return;
-
-
-
-
-
-
-
-
-
-
+            //var rolesToCheck = await global.sortByKey(await global.findRoles(guild, 0, ['Beginner', 'Intermediate', 'Advanced', 'Fluent', 'Native Speaker']), 'name');
             console.log('err');
             await getInactiveUsers(guild);
             return;
@@ -202,7 +166,7 @@ module.exports = async (client) => {
             var allMsgs = allMsgs.filter(function(item, pos, self) { return self.indexOf(item) == pos; })
             console.log(allMsgs.length);
         })
-    }, 300000)
+    }, 15000)
 
     setInterval(function() {
         client.guilds.cache.forEach(async (guild) => {

@@ -82,7 +82,7 @@ module.exports = {
             }
         }
 
-        var thanksDB = await fetch("https://najemi.cz/czechifyapi/discord/thanks/?action=log&data=" + encodeURI(JSON.stringify({ "thanker": message.author.id, "thanking": message.mentions.members.first().id, "message": 'https://discord.com/channels/' + message.guild.id + '/' + message.channel.id + '/' + message.id + '/' }))).then(res => res.text())
+        var thanksDB = await fetch("https://najemi.cz/czechifyapi/discord/thanks/?action=log&data=" + encodeURIComponent(JSON.stringify({ "thanker": message.author.id, "thanking": message.mentions.members.first().id, "message": 'https://discord.com/channels/' + message.guild.id + '/' + message.channel.id + '/' + message.id + '/' }))).then(res => res.text())
 
         var thanksDB = await fetch("https://najemi.cz/czechifyapi/discord/thanks/?action=fetch").then(res => res.text())
         thanksDB = JSON.parse(thanksDB);
